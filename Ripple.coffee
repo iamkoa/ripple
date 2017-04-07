@@ -1,6 +1,6 @@
 defaults = {
 	showAnimation:
-		time: .6
+		time: .4
 		curve: "cubic-bezier(0.4, 0.0, 0.2, 1)"
 }
 
@@ -97,7 +97,7 @@ exports.RippleTransition = ({layer, openFrom, closeTo} = {}) ->
 	# To calc the mask size, get the largest distance between our origin point and layer point
 	maskSize = Math.max(exports.twoPoints(midX, midY, layer.width, layer.height), exports.twoPoints(midX, midY, 0, 0), exports.twoPoints(midX, midY, layer.width, 0), exports.twoPoints(midX, midY, 0, layer.height)) * 2
 
-	# Create the circle mask layer and insert the layer
+	# Create the circle mask
 	mask = new Layer
 		size: if openFrom? then 0 else maskSize
 		backgroundColor: "transparent"
@@ -105,24 +105,30 @@ exports.RippleTransition = ({layer, openFrom, closeTo} = {}) ->
 		name: "mask"
 		clip: true
 
+	# Capture the parent of `layer`
+	layerParent = layer.parent
+	if layerParent? then mask.parent = layerParent
+
 	# Depending on whether we're opening or closing, set different vars
 	mask.props = if openFrom? then { x: midX, y: midY } else { midX: midX, midY: midY }
 
+	# Create a container within the mask to place the referenced layer
 	container = new Layer
 		size: Screen.size
 		parent: mask
 		name: "container"
 		force2d: true
 
-	# Anchor our content
+	# Snapshot the layer
 	container.screenFrame =
 		x: 0
 		y: 0
 		size: Screen.size
 
+	# Place the referenced layer inside the container
 	container.addChild(layer)
 
-	# Make our invisible layer, visible
+	# Make our invisible layer, visible?
 	if openFrom?
 		layer.visible = true
 
@@ -146,11 +152,11 @@ exports.RippleTransition = ({layer, openFrom, closeTo} = {}) ->
 			time: exports.defaults.showAnimation.time
 			curve: exports.defaults.showAnimation.curve
 
-	# Destroy the mask
+	# Destroy the mask and reset layer properties
 	mask.onAnimationEnd ->
-		if closeTo?
-			layer.visible = false
+		if closeTo? then layer.visible = false
 		container.removeChild(layer)
+		if layerParent? then layerParent.addChild(layer)
 		mask.destroy()
 
 	return mask
