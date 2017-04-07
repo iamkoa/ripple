@@ -3,7 +3,7 @@
 A [Framer](http://framerjs.com) module to easily add a ripple transition animation to any layer. The transition is widely referenced in Google's [Material Design](https://material.io/guidelines/motion/material-motion.html) system.
 
 
-![Example](framer-ripple.gif)
+![Example](framer-ripple-example.gif)
 
 ## Installation
 
