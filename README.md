@@ -59,3 +59,12 @@ LayerA.on Events.Tap, (e) ->
 ## How it works
 
 Calling `RippleTransition` places the referenced '<Layer>' inside of a mask layer. Once the mask animation is complete, the `<Layer>` is removed from the mask layer and the mask is destroyed. Any properties of `<Layer>` are maintained.
+
+
+## Bonus
+
+Add a touch ripple effect to any layer by calling the `Ripple` function:
+```coffeescript
+layerA.on Events.Tap, (event) ->
+  R.Ripple(event, @)
+```
